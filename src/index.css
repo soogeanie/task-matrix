@@ -1,0 +1,10 @@
+@tailwind base;
+
+@layer base {
+  :root {
+    @apply antialiased font-normal text-base;
+  }
+}
+
+@tailwind components;
+@tailwind utilities;
