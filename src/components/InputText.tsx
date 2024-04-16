@@ -4,9 +4,11 @@ type InputTextProps = {
   name?: string;
   placeholder?: string;
   required?: boolean;
+  onBlur: (text: string) => void;
 }
 
 const InputText = ({
+  onBlur,
   label,
   ...inputAttrs
 }: InputTextProps) => {
@@ -14,7 +16,11 @@ const InputText = ({
     <div>
       <label htmlFor={inputAttrs.id} className="sr-only">{label}</label>
 
-      <input type="text" {...inputAttrs}/>
+      <input
+        type="text"
+        {...inputAttrs}
+        onBlur={(event) => onBlur(event.target.value)}
+      />
     </div>
   )
 }
