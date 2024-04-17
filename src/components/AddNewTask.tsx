@@ -1,4 +1,6 @@
-import { TaskInput } from './CreateTaskList';
+import type { TaskInput } from './CreateTaskList';
+import PlusCircleIcon from './Icons/PlusCircleIcon';
+import InputGroup from './InputGroup';
 import InputText from './InputText'
 
 type AddNewTaskProps = {
@@ -29,12 +31,18 @@ const AddNewTask = ({ nextInput, handleNewTask }: AddNewTaskProps) => {
 
   return (
     <form id="addNewTask" onSubmit={handleSubmit}>
-      <InputText
-        {...newTask}
-        placeholder="Add Another Task"
-      />
+      <InputGroup>
+        <InputText
+          className="bg-gray-100 focus:ring-emerald-800"
+          placeholder="Add A New Task"
+          {...newTask}
+        />
 
-      <button type="submit">Add</button>
+        <button type="submit">
+          <PlusCircleIcon className="h-11 w-11 text-emerald-800" />
+          <span className="sr-only">Add New Task</span>
+        </button>
+      </InputGroup>
     </form>
   )
 }

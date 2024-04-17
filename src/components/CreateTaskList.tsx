@@ -1,6 +1,8 @@
 import { useReducer } from 'react';
+import InputGroup from './InputGroup';
 import InputText from './InputText';
 import AddNewTask from './AddNewTask';
+import MinusCircleIcon from './Icons/MinusCircleIcon';
 
 export type TaskInput = {
   id: string;
@@ -51,16 +53,26 @@ const CreateTaskList = () => {
   const [state, dispatch] = useReducer(taskInputsReducer, createInitialState(MIN_TASKS))
 
   return (
-    <>
+    <div className="mx-auto max-w-2xl px-4 sm:px-0">
       <h1>Input the Competing Tasks</h1>
 
       <form>
         {state.tasks.map((task: TaskInput) => (
-          <InputText
-            key={task.id}
-            {...task}
-            placeholder='New Task'
-          />
+          <InputGroup key={task.id}>
+            <InputText
+              placeholder='New Task'
+              {...task}
+            />
+
+            {state.total > MIN_TASKS ?
+              <button type="button">
+                <MinusCircleIcon className="h-10 w-10 text-red-700" />
+                <span className="sr-only">{`Delete ${task.label}`}</span>
+              </button>
+            :
+              <div className="w-11 ml-1"></div>
+            }
+          </InputGroup>
         ))}
       </form>
 
@@ -73,7 +85,7 @@ const CreateTaskList = () => {
           })}
         />
       }
-    </>
+    </div>
   )
 }
 
