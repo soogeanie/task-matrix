@@ -4,12 +4,12 @@ type InputTextProps = {
   name?: string;
   placeholder?: string;
   required?: boolean;
-  onBlur: (text: string) => void;
+  defaultValue?: string;
 }
 
 const InputText = ({
-  onBlur,
   label,
+  name,
   ...inputAttrs
 }: InputTextProps) => {
   return (
@@ -18,8 +18,8 @@ const InputText = ({
 
       <input
         type="text"
+        name={name || inputAttrs.id}
         {...inputAttrs}
-        onBlur={(event) => onBlur(event.target.value)}
       />
     </div>
   )

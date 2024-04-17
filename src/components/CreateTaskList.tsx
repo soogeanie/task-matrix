@@ -1,46 +1,27 @@
-import { useReducer } from 'react'
-import InputText from './InputText'
+import { useReducer } from 'react';
+import InputText from './InputText';
+import AddNewTask from './AddNewTask';
 
-type NewTask = {
-  id: number;
-  text: string;
+export type TaskInput = {
+  id: string;
+  label: string;
+  defaultValue?: string;
 }
 
 const MIN_TASKS = 3
-// const MAX_TASKS = 10
+const MAX_TASKS = 10
 
 const ACTIONS = {
-  ADD_TASK: 'addTask',
-  UPDATE_TASK: 'updateTask'
+  ADD_TASK: 'addTask'
 }
 
-const tasksReducer = (state, action) => {
-  switch(action.type) {
-    case ACTIONS.UPDATE_TASK: {
-      const updatedTasks = state.tasks.map((task: NewTask) => {
-        if (task.id === action.id) {
-          return {
-            id: task.id,
-            text: action.text
-          }
-        }
-
-        return task
-      })
-
-      return {
-        ...state,
-        tasks: updatedTasks
-      }
-    }
-
+const taskInputsReducer = (state, action) => {
+  switch (action.type) {
     case ACTIONS.ADD_TASK: {
       return {
-        tasks: [...state.tasks, {
-          id: action.id,
-          text: action.text
-        }],
-        total: state.total++
+        tasks: [...state.tasks, action.newTask],
+        total: state.total++,
+        next: state.total + 2
       }
     }
   }
@@ -49,43 +30,49 @@ const tasksReducer = (state, action) => {
 }
 
 const createInitialState = (minTasks: number) => {
-  const intialTasks: NewTask[] = []
+  const initialTasks: TaskInput[] = []
 
   for (let i = 1; i <= minTasks; i++) {
-    intialTasks.push({
-      id: i,
-      text: ''
+    initialTasks.push({
+      id: `task-input-${i}`,
+      label: `Task Input ${i}`,
+      defaultValue: ''
     })
   }
 
   return {
-    tasks: intialTasks,
-    total: 3
+    tasks: initialTasks,
+    total: minTasks,
+    next: minTasks + 1,
   }
 }
 
 const CreateTaskList = () => {
-  const [state, dispatch] = useReducer(tasksReducer, createInitialState(MIN_TASKS))
+  const [state, dispatch] = useReducer(taskInputsReducer, createInitialState(MIN_TASKS))
 
   return (
     <>
       <h1>Input the Competing Tasks</h1>
 
       <form>
-        {state.tasks.map((task: NewTask) => (
+        {state.tasks.map((task: TaskInput) => (
           <InputText
-            key={`task-input-${task.id}`}
-            id={`task-input-${task.id}`}
-            label={`Task Input ${task.id}`}
+            key={task.id}
+            {...task}
             placeholder='New Task'
-            onBlur={(inputValue) => dispatch({
-              type: ACTIONS.UPDATE_TASK,
-              id: task.id,
-              text: inputValue
-            })}
           />
         ))}
       </form>
+
+      {state.total !== MAX_TASKS && 
+        <AddNewTask
+          nextInput={state.next}
+          handleNewTask={(newTask: TaskInput) => dispatch({
+            type: ACTIONS.ADD_TASK,
+            newTask
+          })}
+        />
+      }
     </>
   )
 }
