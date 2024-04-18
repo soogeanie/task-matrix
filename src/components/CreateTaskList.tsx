@@ -14,16 +14,29 @@ const MIN_TASKS = 3
 const MAX_TASKS = 10
 
 const ACTIONS = {
-  ADD_TASK: 'addTask'
+  ADD_TASK: 'addTask',
+  DELETE_TASK: 'deleteTask'
 }
 
 const taskInputsReducer = (state, action) => {
   switch (action.type) {
     case ACTIONS.ADD_TASK: {
+      const updatedTasks = [...state.tasks, action.newTask]
+
       return {
-        tasks: [...state.tasks, action.newTask],
-        total: state.total++,
-        next: state.total + 2
+        tasks: updatedTasks,
+        total: updatedTasks.length,
+        next: state.next++
+      }
+    }
+
+    case ACTIONS.DELETE_TASK: {
+      const updatedTasks = state.tasks.filter((task: TaskInput) => task.id !== action.id)
+
+      return {
+        tasks: updatedTasks,
+        total: updatedTasks.length,
+        next: state.next
       }
     }
   }
@@ -65,7 +78,13 @@ const CreateTaskList = () => {
             />
 
             {state.total > MIN_TASKS ?
-              <button type="button">
+              <button
+                type="button"
+                onClick={() => dispatch({
+                  type: ACTIONS.DELETE_TASK,
+                  id: task.id
+                })}
+              >
                 <MinusCircleIcon className="h-10 w-10 text-red-700" />
                 <span className="sr-only">{`Delete ${task.label}`}</span>
               </button>
