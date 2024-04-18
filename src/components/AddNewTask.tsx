@@ -1,4 +1,4 @@
-import type { TaskInput } from './CreateTaskList';
+import type { TaskInput } from './NewTaskList';
 import PlusCircleIcon from './Icons/PlusCircleIcon';
 import InputGroup from './InputGroup';
 import InputText from './InputText'
@@ -38,8 +38,8 @@ const AddNewTask = ({ nextInput, handleNewTask }: AddNewTaskProps) => {
           {...newTask}
         />
 
-        <button type="submit">
-          <PlusCircleIcon className="h-11 w-11 text-emerald-800" />
+        <button type="submit" className="group">
+          <PlusCircleIcon className="h-11 w-11 text-emerald-800 group-hover:text-emerald-700" />
           <span className="sr-only">Add New Task</span>
         </button>
       </InputGroup>
