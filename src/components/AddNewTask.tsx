@@ -23,7 +23,8 @@ const AddNewTask = ({ nextInput, handleNewTask }: AddNewTaskProps) => {
 
     handleNewTask({
       ...newTask,
-      defaultValue: newTaskValue || ''
+      defaultValue: newTaskValue || '',
+      hasValue: !!newTaskValue
     })
 
     event.currentTarget.reset()

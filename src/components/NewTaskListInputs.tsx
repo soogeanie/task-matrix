@@ -6,13 +6,15 @@ import InputText from './InputText'
 type NewTaskListInputsProps = {
   tasks: TaskInput[];
   minTasks: number;
-  handleDelete: (taskId: string) => void;
+  handleDelete: (task: TaskInput) => void;
+  handleInputUpdate: (updatedTask: TaskInput) => void;
 }
 
 const NewTaskListInputs = ({
   tasks,
   minTasks,
   handleDelete,
+  handleInputUpdate
 }: NewTaskListInputsProps) => {
   return (
     <>
@@ -21,14 +23,20 @@ const NewTaskListInputs = ({
           <InputText
             placeholder='New Task'
             required
-            {...task}
+            id={task.id}
+            label={task.label}
+            defaultValue={task.defaultValue}
+            handleOnChange={(event) => handleInputUpdate({
+              ...task,
+              hasValue: !!event.currentTarget.value
+            })}
           />
 
           <button
             type="button"
             className="group"
             disabled={tasks.length <= minTasks}
-            onClick={() => handleDelete(task.id)}
+            onClick={() => handleDelete(task)}
           >
             <MinusCircleIcon
               className="h-11 w-11 text-red-700 group-hover:text-red-600 group-disabled:text-gray-300"
