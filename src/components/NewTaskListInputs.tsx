@@ -2,6 +2,7 @@ import { TaskInput } from './NewTaskList'
 import MinusCircleIcon from './Icons/MinusCircleIcon'
 import InputGroup from './InputGroup'
 import InputText from './InputText'
+import Button from './Button/Button'
 
 type NewTaskListInputsProps = {
   tasks: TaskInput[];
@@ -14,7 +15,7 @@ const NewTaskListInputs = ({
   tasks,
   minTasks,
   handleDelete,
-  handleInputUpdate
+  handleInputUpdate,
 }: NewTaskListInputsProps) => {
   return (
     <>
@@ -32,17 +33,16 @@ const NewTaskListInputs = ({
             })}
           />
 
-          <button
+          <Button
             type="button"
-            className="group"
+            color="red"
+            style="iconOnly"
             disabled={tasks.length <= minTasks}
-            onClick={() => handleDelete(task)}
+            handleOnClick={() => handleDelete(task)}
           >
-            <MinusCircleIcon
-              className="h-11 w-11 text-red-700 group-hover:text-red-600 group-disabled:text-gray-300"
-            />
+            <MinusCircleIcon className="h-11 w-11" />
             <span className="sr-only">{`Delete ${task.label}`}</span>
-          </button>
+          </Button>
         </InputGroup>
       ))}
     </>

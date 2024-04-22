@@ -8,13 +8,20 @@ type InputTextProps = {
   name?: string;
   placeholder?: string;
   required?: boolean;
+  secondary?: boolean;
   handleOnChange?: (event: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const INPUT_STYLES = {
+  DEFAULT: 'bg-white focus:ring-violet-400 focus:border-violet-400',
+  SECONDARY: 'bg-gray-100 focus:ring-emerald-800 focus:border-emerald-800'
 }
 
 const InputText = ({
   label,
   name,
   className,
+  secondary = false,
   handleOnChange,
   ...inputAttrs
 }: InputTextProps) => {
@@ -26,9 +33,13 @@ const InputText = ({
 
       <input
         type="text"
-        className={clsx("block w-full rounded-md border-0 px-4 py-1.5 shadow-sm text-base font-semibold text-gray-900 leading-8 placeholder:text-gray-400 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-violet-400", className)}
+        className={clsx([
+          "block w-full px-4 py-1.5 rounded-md text-base font-semibold text-gray-900 leading-8 shadow-sm placeholder:text-gray-400 border border-gray-300 focus:outline-none focus:ring-1 focus:ring-inset",
+          "invalid:[&:not(:placeholder-shown)]:ring-1 invalid:[&:not(:placeholder-shown):not(:focus)]:ring-red-600 invalid:[&:not(:placeholder-shown):not(:focus)]:border-red-600",
+          secondary ? INPUT_STYLES.SECONDARY : INPUT_STYLES.DEFAULT,
+          className
+        ])}
         name={name || inputAttrs.id}
-        maxLength={255}
         {...inputAttrs}
         onChange={(event) => !!handleOnChange && handleOnChange(event)}
       />

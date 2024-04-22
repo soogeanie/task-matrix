@@ -1,6 +1,7 @@
-import { useReducer } from 'react';
+import React, { useReducer, useState } from 'react';
 import NewTaskListInputs from './NewTaskListInputs';
 import AddNewTask from './AddNewTask';
+import Button from './Button/Button';
 
 export type TaskInput = {
   id: string;
@@ -95,6 +96,7 @@ const createInitialState = (minTasks: number) => {
 
 const NewTaskList = () => {
   const [state, dispatch] = useReducer(taskInputsReducer, createInitialState(MIN_TASKS))
+  const [errors, setErrors] = useState([])
 
   const updateTasks = ({ type, task }: UpdateTaskProps) => {
     dispatch({ type, ...task })
@@ -102,26 +104,40 @@ const NewTaskList = () => {
     dispatch({ type: ACTIONS.UPDATE_VALIDITY })
   }
 
-  const handleFormSubmit = (event) => {
+  const handleInputValidation = (inputId: string) => {
+    const input = document.getElementById(inputId) as HTMLInputElement
+    
+    let errorMessage = ''
+
+    if (input.value.trim().length < 3) {
+      errorMessage = 'Input requires a minimum of 3 characters.'
+    }
+
+    if (input.value.trim().length > 255) {
+      errorMessage = ''
+    }
+
+    input.setCustomValidity(errorMessage)
+  }
+  
+  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     console.log('submitted')
 
     const formData = new FormData(event.currentTarget)
-    const values = Array.from(formData.values())
+    // const formValues = Array.from(formData.values())
 
-    for (const value of formData.values()) {
-      console.log(value);
+    for (const inputId of formData.keys()) {
+      handleInputValidation(inputId)
     }
-
-    console.log(values)
   }
 
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-0 flex flex-col">
       <h1>Input the Competing Tasks</h1>
 
-      <form id="newTaskList" onSubmit={handleFormSubmit}>
+      <form id="newTaskList" noValidate onSubmit={onFormSubmit}>
         <NewTaskListInputs
           tasks={state.tasks}
           minTasks={MIN_TASKS}
@@ -137,14 +153,15 @@ const NewTaskList = () => {
         />
       }
 
-      <button
+      <Button
         type="submit"
         form="newTaskList"
-        className="mt-4 md:mt-6 w-1/2 self-center rounded-full bg-purple-300 px-10 py-2 text-lg font-bold text-purple-950 shadow-sm hover:bg-purple-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-300 disabled:bg-gray-200 disabled:text-gray-400"
+        className="mt-4 md:mt-6 w-1/2 self-center"
         disabled={!state.validForm}
+        handleOnClick={() => onFormSubmit}
       >
         Done
-      </button>
+      </Button>
     </div>
   )
 }
