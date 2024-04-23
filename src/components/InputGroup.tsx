@@ -4,7 +4,7 @@ type InputGroupProps = {
 
 const InputGroup = ({ children }: InputGroupProps) => {
   return (
-    <div role="group" className="py-2 flex items-center gap-4">
+    <div role="group" className="py-2 flex justify-between items-center gap-4">
       {children}
     </div>
   )

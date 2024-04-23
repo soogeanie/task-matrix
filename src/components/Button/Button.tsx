@@ -2,8 +2,8 @@ import clsx from 'clsx';
 import { BUTTON_CLASSES } from './constants';
 
 type ButtonStyleProps = {
-  color?: 'green' | 'purple' | 'red' | undefined;
-  style?: 'rounded' | 'iconOnly' | undefined;
+  color?: 'green' | 'purple' | 'red';
+  style?: 'rounded' | 'iconOnly';
 }
 
 type ButtonProps = ButtonStyleProps & {

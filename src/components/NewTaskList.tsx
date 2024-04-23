@@ -1,5 +1,6 @@
-import React, { useReducer, useState } from 'react';
-import NewTaskListInputs from './NewTaskListInputs';
+import { useReducer } from 'react'
+
+import NewTaskListForm from './NewTaskListForm'
 import AddNewTask from './AddNewTask';
 import Button from './Button/Button';
 
@@ -8,11 +9,12 @@ export type TaskInput = {
   label: string;
   defaultValue: string;
   hasValue: boolean;
+  hasError: boolean;
 }
 
-type UpdateTaskProps = {
-  type: string;
-  task: TaskInput;
+export type InputUpdateProps = {
+  inputId: string;
+  validityState: ValidityState;
 }
 
 const MIN_TASKS = 3
@@ -22,26 +24,32 @@ const ACTIONS = {
   ADD_TASK: 'addTask',
   DELETE_TASK: 'deleteTask',
   UPDATE_TASK: 'updateTask',
-  UPDATE_VALIDITY: 'updateValidity'
+  UPDATE_SUBMIT_BUTTON: 'updateSubmitButton',
+  UPDATE_ERROR: 'updateError'
 }
 
-const taskInputsReducer = (state, action) => {
+const newTaskListReducer = (state, action) => {
   switch (action.type) {
     case ACTIONS.ADD_TASK: {
-      const { id, label, defaultValue, hasValue } = action
+      const nextTask = state.next++
 
-      const updatedTasks = [...state.tasks, { id, label, defaultValue, hasValue }]
+      const updatedTasks = [...state.tasks, action.task]
 
       return {
         ...state,
         tasks: updatedTasks,
         total: updatedTasks.length,
-        next: state.next++
+        next: nextTask,
+        nextTask: {
+          id: `task-input-${nextTask}`,
+          label: `Task Input ${nextTask}`,
+          defaultValue: ''
+        }
       }
     }
 
     case ACTIONS.DELETE_TASK: {
-      const updatedTasks = state.tasks.filter((task: TaskInput) => task.id !== action.id)
+      const updatedTasks = state.tasks.filter((task: TaskInput) => task.id !== action.task.id)
 
       return {
         ...state,
@@ -52,9 +60,9 @@ const taskInputsReducer = (state, action) => {
 
     case ACTIONS.UPDATE_TASK: {
       const updatedTasks = state.tasks.map((task: TaskInput) => {
-        if (task.id !== action.id) return task
+        if (task.id !== action.task.id) return task
 
-        return { ...task, hasValue: action.hasValue }
+        return { ...task, ...action.task }
       })
 
       return {
@@ -63,10 +71,31 @@ const taskInputsReducer = (state, action) => {
       }
     }
 
-    case ACTIONS.UPDATE_VALIDITY: {
+    case ACTIONS.UPDATE_ERROR: {
+      const updatedTasks = state.tasks.map((task: TaskInput) => {
+        if (task.id !== action.taskId) return task
+
+        return { ...task, hasError: action.hasError }
+      })
+
+      const isValidForm = updatedTasks.every((task: TaskInput) => !task.hasError)
+
       return {
         ...state,
-        validForm: state.tasks.every((task: TaskInput) => task.hasValue)
+        tasks: updatedTasks,
+        validForm: isValidForm,
+        enableSubmitButton: isValidForm
+      }
+    }
+
+    case ACTIONS.UPDATE_SUBMIT_BUTTON: {
+      const enableSubmitButton = action.enableSubmitButton
+        ? action.enableSubmitButton
+        : state.tasks.every((task: TaskInput) => task.hasValue)
+
+      return {
+        ...state,
+        enableSubmitButton: enableSubmitButton
       }
     }
   }
@@ -76,89 +105,91 @@ const taskInputsReducer = (state, action) => {
 
 const createInitialState = (minTasks: number) => {
   const initialTasks: TaskInput[] = []
+  const nextTask = minTasks + 1
 
   for (let i = 1; i <= minTasks; i++) {
     initialTasks.push({
       id: `task-input-${i}`,
       label: `Task Input ${i}`,
       defaultValue: '',
-      hasValue: false
+      hasValue: false,
+      hasError: false
     })
   }
 
   return {
     tasks: initialTasks,
     total: minTasks,
-    next: minTasks + 1,
-    validForm: false
+    next: nextTask,
+    newTask: {
+      id: `task-input-${nextTask}`,
+      label: `Task Input ${nextTask}`,
+      defaultValue: '',
+      hasError: false
+    },
+    enableSubmitButton: false,
+    validForm: true
   }
 }
 
 const NewTaskList = () => {
-  const [state, dispatch] = useReducer(taskInputsReducer, createInitialState(MIN_TASKS))
-  const [errors, setErrors] = useState([])
+  const [state, dispatch] = useReducer(newTaskListReducer, createInitialState(MIN_TASKS))
 
-  const updateTasks = ({ type, task }: UpdateTaskProps) => {
-    dispatch({ type, ...task })
+  const handleTaskInputUpdates = (type, task) => {
+    dispatch({ type, task })
 
-    dispatch({ type: ACTIONS.UPDATE_VALIDITY })
+    dispatch({ type: ACTIONS.UPDATE_SUBMIT_BUTTON })
   }
 
-  const handleInputValidation = (inputId: string) => {
-    const input = document.getElementById(inputId) as HTMLInputElement
-    
-    let errorMessage = ''
+   const validateForm = (formInputIds: string[]) => {
+    for (const inputId of formInputIds) {
+      const input = document.getElementById(inputId) as HTMLInputElement
 
-    if (input.value.trim().length < 3) {
-      errorMessage = 'Input requires a minimum of 3 characters.'
+      dispatch({
+        type: ACTIONS.UPDATE_ERROR,
+        taskId: input.id,
+        hasError: !input.validity.valid
+      })
     }
+   }
 
-    if (input.value.trim().length > 255) {
-      errorMessage = ''
-    }
-
-    input.setCustomValidity(errorMessage)
-  }
-  
-  const onFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    console.log('submitted')
+    console.log('form submitted')
+
+    dispatch({
+      type: ACTIONS.UPDATE_SUBMIT_BUTTON,
+      enableSubmitButton: false
+    })
 
     const formData = new FormData(event.currentTarget)
-    // const formValues = Array.from(formData.values())
-
-    for (const inputId of formData.keys()) {
-      handleInputValidation(inputId)
-    }
+    await validateForm([...formData.keys()])
   }
 
   return (
     <div className="mx-auto max-w-2xl px-4 sm:px-0 flex flex-col">
       <h1>Input the Competing Tasks</h1>
 
-      <form id="newTaskList" noValidate onSubmit={onFormSubmit}>
-        <NewTaskListInputs
-          tasks={state.tasks}
-          minTasks={MIN_TASKS}
-          handleDelete={(task: TaskInput) => updateTasks({ type: ACTIONS.DELETE_TASK, task })}
-          handleInputUpdate={(task: TaskInput) => updateTasks({ type: ACTIONS.UPDATE_TASK, task })}
-        />
-      </form>
+      <NewTaskListForm
+        tasks={state.tasks}
+        minTasks={MIN_TASKS}
+        validForm={state.validForm}
+        onInputUpdate={(updatedTask: TaskInput) => handleTaskInputUpdates(ACTIONS.UPDATE_TASK, updatedTask )}
+        onInputDelete={(task: TaskInput) => handleTaskInputUpdates(ACTIONS.DELETE_TASK, task)}
+        onFormSubmit={(event) => handleFormSubmit(event)}
+      />
 
-      {state.total !== MAX_TASKS && 
-        <AddNewTask
-          nextInput={state.next}
-          handleNewTask={(task: TaskInput) => updateTasks({ type: ACTIONS.ADD_TASK, task })}
-        />
+      {state.total !== MAX_TASKS &&
+        <AddNewTask newTask={state.newTask} addNewTask={(task: TaskInput) => handleTaskInputUpdates(ACTIONS.ADD_TASK, task)} />
       }
 
       <Button
         type="submit"
         form="newTaskList"
         className="mt-4 md:mt-6 w-1/2 self-center"
-        disabled={!state.validForm}
-        handleOnClick={() => onFormSubmit}
+        disabled={!state.enableSubmitButton}
+        handleOnClick={() => handleFormSubmit}
       >
         Done
       </Button>

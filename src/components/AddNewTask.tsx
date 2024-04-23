@@ -1,30 +1,26 @@
 import type { TaskInput } from './NewTaskList';
-import PlusCircleIcon from './Icons/PlusCircleIcon';
+
 import InputGroup from './InputGroup';
-import InputText from './InputText'
+import InputText from './InputText';
 import Button from './Button/Button';
 
+import PlusCircleIcon from './Icons/PlusCircleIcon';
+
 type AddNewTaskProps = {
-  nextInput: string;
-  handleNewTask: (newTask: TaskInput) => void;
+  newTask: Omit<TaskInput, 'hasValue'>;
+  addNewTask: (newTask: TaskInput) => void;
 }
 
-const AddNewTask = ({ nextInput, handleNewTask }: AddNewTaskProps) => {
-  const newTask = {
-    id: `task-input-${nextInput}`,
-    label: `Task Input ${nextInput}`,
-    defaultValue: ''
-  }
-
+const AddNewTask = ({ newTask, addNewTask }: AddNewTaskProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    
-    const formData = new FormData(event.currentTarget)
-    const newTaskValue = formData.get(newTask.id) as string | null
 
-    handleNewTask({
+    const formData = new FormData(event.currentTarget)
+    const newTaskValue = formData.get(newTask.id) as string
+
+    addNewTask({
       ...newTask,
-      defaultValue: newTaskValue || '',
+      defaultValue: newTaskValue,
       hasValue: !!newTaskValue
     })
 
@@ -35,7 +31,7 @@ const AddNewTask = ({ nextInput, handleNewTask }: AddNewTaskProps) => {
     <form id="addNewTask" onSubmit={handleSubmit}>
       <InputGroup>
         <InputText
-          placeholder="Add A New Task"
+          placeholder="Add a New Task"
           secondary
           {...newTask}
         />
@@ -47,7 +43,7 @@ const AddNewTask = ({ nextInput, handleNewTask }: AddNewTaskProps) => {
           style="iconOnly"
           handleOnClick={() => handleSubmit}
         >
-          <PlusCircleIcon className="h-11 w-11" />
+          <PlusCircleIcon className="h-11 w-11" aria-hidden="true" />
           <span className="sr-only">Add New Task</span>
         </Button>
       </InputGroup>
