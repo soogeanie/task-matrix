@@ -40,7 +40,7 @@ const newTaskListReducer = (state, action) => {
         tasks: updatedTasks,
         total: updatedTasks.length,
         next: nextTask,
-        nextTask: {
+        newTask: {
           id: `task-input-${nextTask}`,
           label: `Task Input ${nextTask}`,
           defaultValue: ''
@@ -142,8 +142,12 @@ const NewTaskList = () => {
   }
 
    const validateForm = (formInputIds: string[]) => {
+    let isValid = true
+
     for (const inputId of formInputIds) {
       const input = document.getElementById(inputId) as HTMLInputElement
+
+      isValid = input.validity.valid
 
       dispatch({
         type: ACTIONS.UPDATE_ERROR,
@@ -151,7 +155,9 @@ const NewTaskList = () => {
         hasError: !input.validity.valid
       })
     }
-   }
+
+    return isValid
+  }
 
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -164,7 +170,13 @@ const NewTaskList = () => {
     })
 
     const formData = new FormData(event.currentTarget)
-    await validateForm([...formData.keys()])
+    const isValidForm = await validateForm([...formData.keys()])
+
+    if (isValidForm) {
+      const formValues = [...formData.values()]
+
+      console.log('valid form!', formValues)
+    }
   }
 
   return (
@@ -181,7 +193,10 @@ const NewTaskList = () => {
       />
 
       {state.total !== MAX_TASKS &&
-        <AddNewTask newTask={state.newTask} addNewTask={(task: TaskInput) => handleTaskInputUpdates(ACTIONS.ADD_TASK, task)} />
+        <AddNewTask
+          newTask={state.newTask}
+          addNewTask={(task: TaskInput) => handleTaskInputUpdates(ACTIONS.ADD_TASK, task)}
+        />
       }
 
       <Button
