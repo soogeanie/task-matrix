@@ -1,29 +1,31 @@
+import type { NewTaskInput } from './CreateNewTasks'
+
 import Button from './Button/Button';
-import MinusCircleIcon from './Icons/MinusCircleIcon';
 import InputGroup from './InputGroup';
 import InputText from './InputText';
-import type { TaskInput } from './NewTaskList'
 
-type NewTaskListFormProps = {
-  tasks: TaskInput[];
+import MinusCircleIcon from './Icons/MinusCircleIcon';
+
+type CreateNewTasksFormProps = {
+  tasks: NewTaskInput[];
   minTasks: number;
   validForm: boolean;
-  onInputUpdate: (updatedTask: TaskInput) => void;
-  onInputDelete: (task: TaskInput) => void;
+  onInputUpdate: (updatedTask: NewTaskInput) => void;
+  onInputDelete: (task: NewTaskInput) => void;
   onFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
-const NewTaskListForm = ({
+const CreateNewTasksForm = ({
   tasks,
   minTasks,
   validForm,
   onInputUpdate,
   onInputDelete,
   onFormSubmit
-}: NewTaskListFormProps) => {
+}: CreateNewTasksFormProps) => {
 
-  const handleChange = (updatedTask: TaskInput) => {
-    const existingTask = tasks.find((task: TaskInput) => task.id === updatedTask.id)
+  const handleChange = (updatedTask: NewTaskInput) => {
+    const existingTask = tasks.find((task: NewTaskInput) => task.id === updatedTask.id)
 
     if (!existingTask || (updatedTask.hasValue === existingTask.hasValue) && !updatedTask.hasError) return
 
@@ -36,7 +38,7 @@ const NewTaskListForm = ({
       noValidate
       onSubmit={onFormSubmit}
     >
-      {tasks.map((task: TaskInput) => (
+      {tasks.map((task: NewTaskInput) => (
         <InputGroup key={`newTask-${task.id}`}>
           <InputText
             required
@@ -67,4 +69,4 @@ const NewTaskListForm = ({
   )
 }
 
-export default NewTaskListForm
+export default CreateNewTasksForm

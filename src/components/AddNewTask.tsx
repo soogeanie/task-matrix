@@ -1,4 +1,4 @@
-import type { TaskInput } from './NewTaskList';
+import type { NewTaskInput } from './CreateNewTasks';
 
 import InputGroup from './InputGroup';
 import InputText from './InputText';
@@ -7,8 +7,8 @@ import Button from './Button/Button';
 import PlusCircleIcon from './Icons/PlusCircleIcon';
 
 type AddNewTaskProps = {
-  newTask: Omit<TaskInput, 'hasValue'>;
-  addNewTask: (newTask: TaskInput) => void;
+  newTask: Omit<NewTaskInput, 'hasValue'>;
+  addNewTask: (newTask: NewTaskInput) => void;
 }
 
 const AddNewTask = ({ newTask, addNewTask }: AddNewTaskProps) => {
