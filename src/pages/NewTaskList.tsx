@@ -1,24 +1,36 @@
-import { useReducer } from 'react'
-import { ACTIONS, initialNewTaskList, newTaskListReducer } from '../reducers/NewTaskListReducer'
-import CreateNewTasks from '../components/CreateNewTasks'
+import { useState } from 'react'
 
-// export const NEW_TASK_VIEWS = {
-//   CREATE: 'CreateNewTasks',
-//   SELECT: 'SelectTask'
-// } as const
+import CreateNewTasks from '../components/CreateNewTasks'
+import TaskSelector from '../components/TaskSelector'
+
+const NEW_TASK_VIEWS = {
+  CREATE: 'CreateNewTasks',
+  SELECT: 'TaskSelector'
+} as const
+
+// eventually tbd: handle when there is an existing newTaskList in locale storage better than this???
+const EXISTING_NEW_TASK_LIST = JSON.parse(localStorage.getItem('newTaskList'))
+const DEFAULT_NEW_TASK_LIST = EXISTING_NEW_TASK_LIST || []
+const DEFAULT_CURRENT_VIEW = DEFAULT_NEW_TASK_LIST.length > 0 ? NEW_TASK_VIEWS.SELECT : NEW_TASK_VIEWS.CREATE
 
 const NewTaskList = () => {
-  const [state, dispatch] = useReducer(newTaskListReducer, initialNewTaskList('CreateNewTasks'))
+  const [currentView, setCurrentView] = useState(DEFAULT_CURRENT_VIEW)
+  const [newTaskList, setNewTaskList] = useState(DEFAULT_NEW_TASK_LIST)
+
+  const handleNewTaskListCreation = (newTaskList: string[]) => {
+    // tbd: handle when newTaskList is empty
+    setNewTaskList(newTaskList)
+    setCurrentView(NEW_TASK_VIEWS.SELECT)
+  }
 
   return (
-    <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-      {state.currentView === 'CreateNewTasks' &&
-        <CreateNewTasks onNewTaskListCreation={(newTaskList) => dispatch({
-          type: ACTIONS.ADD_TASK_LIST,
-          newTaskList
-        })} />
+    <main className="mx-auto max-w-lg px-4 pb-12 pt-10 lg:pb-16">
+      {currentView === NEW_TASK_VIEWS.SELECT ?
+        <TaskSelector newTaskList={newTaskList} />
+      :
+        <CreateNewTasks onNewTaskListCreation={(newTaskList) => handleNewTaskListCreation(newTaskList) } />
       }
-    </div>
+    </main>
   )
 }
 

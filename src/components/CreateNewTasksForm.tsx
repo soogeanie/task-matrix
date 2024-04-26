@@ -35,6 +35,7 @@ const CreateNewTasksForm = ({
   return (
     <form
       id="newTaskList"
+      className="mt-4"
       noValidate
       onSubmit={onFormSubmit}
     >

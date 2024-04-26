@@ -5,6 +5,7 @@ import { ACTIONS, createNewTasksReducer, initialCreateNewTasks } from '../reduce
 import CreateNewTasksForm from './CreateNewTasksForm'
 import AddNewTask from './AddNewTask';
 import Button from './Button/Button';
+import PageHeader from './PageHeader';
 
 export type NewTaskInput = {
   id: string;
@@ -15,7 +16,7 @@ export type NewTaskInput = {
 }
 
 type CreateNewTasksProps = {
-  onNewTaskListCreation: (newTaskList: object) => void;
+  onNewTaskListCreation: (newTaskList: string[]) => void;
 }
 
 const MIN_TASKS = 3
@@ -60,15 +61,21 @@ const CreateNewTasks = ({ onNewTaskListCreation }: CreateNewTasksProps) => {
     const isValidForm = await validateForm([...formData.keys()])
 
     if (isValidForm) {
-      const results = Object.fromEntries([...formData.entries()])
+      const results = [...formData.values()]
+
+      // tbd: create a custom hook for this
+      localStorage.setItem('newTaskList', JSON.stringify(results))
 
       onNewTaskListCreation(results)
     }
   }
 
   return (
-    <div className="mx-auto max-w-2xl px-4 sm:px-0 flex flex-col">
-      <h1>Input the Competing Tasks</h1>
+    <div className="flex flex-col">
+      <PageHeader
+        title="New Task"
+        description="Add the competing tasks. Up to 10 tasks because more than that is too much."
+      />
 
       <CreateNewTasksForm
         tasks={state.tasks}
