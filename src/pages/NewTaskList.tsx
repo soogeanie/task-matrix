@@ -24,7 +24,7 @@ const NewTaskList = () => {
   }
 
   return (
-    <main className="mx-auto max-w-lg px-4 pb-12 pt-10 lg:pb-16">
+    <main className="mx-auto max-w-2xl px-4 pb-12 pt-10 lg:pb-16">
       {currentView === NEW_TASK_VIEWS.SELECT ?
         <TaskMatrix newTaskList={newTaskList} />
       :
