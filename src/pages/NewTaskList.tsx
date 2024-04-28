@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
 import CreateNewTasks from '../components/CreateNewTasks'
-import TaskSelector from '../components/TaskSelector'
+import TaskMatrix from '../components/TaskMatrix'
 
 const NEW_TASK_VIEWS = {
   CREATE: 'CreateNewTasks',
-  SELECT: 'TaskSelector'
+  SELECT: 'TaskMatrix'
 } as const
 
 // eventually tbd: handle when there is an existing newTaskList in locale storage better than this???
@@ -26,7 +26,7 @@ const NewTaskList = () => {
   return (
     <main className="mx-auto max-w-lg px-4 pb-12 pt-10 lg:pb-16">
       {currentView === NEW_TASK_VIEWS.SELECT ?
-        <TaskSelector newTaskList={newTaskList} />
+        <TaskMatrix newTaskList={newTaskList} />
       :
         <CreateNewTasks onNewTaskListCreation={(newTaskList) => handleNewTaskListCreation(newTaskList) } />
       }
