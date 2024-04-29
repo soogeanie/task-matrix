@@ -16,7 +16,7 @@ export type NewTaskInput = {
 }
 
 type CreateNewTasksProps = {
-  onNewTaskListCreation: (newTaskList: string[]) => void;
+  onNewTaskListCreation: (newTaskList: FormDataEntryValue[]) => void;
 }
 
 const MIN_TASKS = 3
@@ -25,13 +25,16 @@ const MAX_TASKS = 10
 const CreateNewTasks = ({ onNewTaskListCreation }: CreateNewTasksProps) => {
   const [state, dispatch] = useReducer(createNewTasksReducer, initialCreateNewTasks(MIN_TASKS))
 
-  const handleTaskInputUpdates = (type, task) => {
-    dispatch({ type, task })
+  const handleTaskUpdate = (action, task) => {
+    dispatch({
+      type: action,
+      task
+    })
 
     dispatch({ type: ACTIONS.UPDATE_SUBMIT_BUTTON })
   }
 
-   const validateForm = (formInputIds: string[]) => {
+  const validateForm = (formInputIds: string[]) => {
     let isValid = true
 
     for (const inputId of formInputIds) {
@@ -81,15 +84,16 @@ const CreateNewTasks = ({ onNewTaskListCreation }: CreateNewTasksProps) => {
         tasks={state.tasks}
         minTasks={MIN_TASKS}
         validForm={state.validForm}
-        onInputUpdate={(updatedTask: NewTaskInput) => handleTaskInputUpdates(ACTIONS.UPDATE_TASK, updatedTask )}
-        onInputDelete={(task: NewTaskInput) => handleTaskInputUpdates(ACTIONS.DELETE_TASK, task)}
+        onChangeTask={(task: NewTaskInput) => handleTaskUpdate(ACTIONS.UPDATE_TASK, task)}
+        onDeleteTask={(task: NewTaskInput) => handleTaskUpdate(ACTIONS.DELETE_TASK, task)}
         onFormSubmit={(event) => handleFormSubmit(event)}
       />
 
+      {/* todo: if there is a task in the addTask input, ask user before submitting form */}
       {state.total !== MAX_TASKS &&
         <AddNewTask
           newTask={state.newTask}
-          addNewTask={(task: NewTaskInput) => handleTaskInputUpdates(ACTIONS.ADD_TASK, task)}
+          onAddTask={(task: NewTaskInput) => handleTaskUpdate(ACTIONS.ADD_TASK, task)}
         />
       }
 

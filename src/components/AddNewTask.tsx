@@ -8,17 +8,17 @@ import PlusCircleIcon from './Icons/PlusCircleIcon';
 
 type AddNewTaskProps = {
   newTask: Omit<NewTaskInput, 'hasValue'>;
-  addNewTask: (newTask: NewTaskInput) => void;
+  onAddTask: (newTask: NewTaskInput) => void;
 }
 
-const AddNewTask = ({ newTask, addNewTask }: AddNewTaskProps) => {
+const AddNewTask = ({ newTask, onAddTask }: AddNewTaskProps) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
     const formData = new FormData(event.currentTarget)
     const newTaskValue = formData.get(newTask.id) as string
 
-    addNewTask({
+    onAddTask({
       ...newTask,
       defaultValue: newTaskValue,
       hasValue: !!newTaskValue

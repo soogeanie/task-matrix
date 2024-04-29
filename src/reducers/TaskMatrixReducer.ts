@@ -2,13 +2,13 @@ type TaskMatrixMap = {
   [key: number]: string;
 }
 
-export type currentTask = {
+export type Task = {
   id: string;
   value: string;
   text: string;
 }
 
-const TASK_MATRIX_KEYS = {
+export const TASK_MATRIX_KEYS = {
   A: 'a',
   B: 'b',
   C: 'c',
@@ -35,66 +35,66 @@ export const TASK_MATRIX_MAP: TaskMatrixMap = {
 } as const
 
 export const ACTIONS = {
-  UPDATE_CHECKED: 'updateChecked',
-  ADD_SELECTED_TASK: 'addSelectedTask',
+  UPDATE_SELECTED: 'updateSelected',
+  ADD_SELECTED: 'addSelected',
 }
 
 export const taskMatrixReducer = (state, action) => {
   switch (action.type) {
-    case ACTIONS.UPDATE_CHECKED: {
+    case ACTIONS.UPDATE_SELECTED: {
       return {
         ...state,
-        checked: action.checked
+        selected: action.selected
       }
     }
 
-    case ACTIONS.ADD_SELECTED_TASK: {
-      const currentColumn = state.current[0]
+    case ACTIONS.ADD_SELECTED: {
+      const currentCol = state.current[0]
       const currentRow = state.current[1]
+      const lastIndex = state.last[1]
 
-      const updatedCurrent = [...state.current]
+      let selectedTasks = [...state.selectedTasks]
+      let current = [...state.current]
 
-      if (currentRow < (state.total - 1)) {
-        updatedCurrent[1] = currentRow + 1
-      } else if (currentRow === (state.total - 1)) {
-        updatedCurrent[0] = currentColumn + 1
-        updatedCurrent[1] = currentColumn + 2
-      }
+      const isLastStep = (currentCol === state.last[0]) && (currentRow === state.last[1])
 
-      const updatedSelectedTasks = [...state.selectedTasks]
-
-      if (!state.selectedTasks[currentColumn]) {
-        updatedSelectedTasks.push([state.checked])
-        console.log('no existing column', updatedSelectedTasks)
+      if (!state.selectedTasks[currentCol]) {
+        selectedTasks = [...selectedTasks, [state.selected]]
       } else {
-        updatedSelectedTasks[currentColumn].push(state.checked)
-        console.log('has existing column', updatedSelectedTasks)
+        selectedTasks[currentCol] = [...selectedTasks[currentCol], state.selected]
       }
 
-      const updatedCurrentTasks = [{
-        id: `task-${TASK_MATRIX_MAP[updatedCurrent[0]]}`,
-        value: TASK_MATRIX_MAP[updatedCurrent[0]],
-        text: state.unprioritized[updatedCurrent[0]],
+      const taskMatrix = {
+        ...state.taskMatrix,
+        [state.selected]: state.taskMatrix[state.selected] + 1
+      }
+
+      if (!isLastStep) {
+        if (currentRow < lastIndex) {
+          current = [state.current[0], currentRow + 1]
+        } else if (currentRow === lastIndex) {
+          current = [currentCol + 1, currentCol + 2]
+        }
+      }
+
+      const nextTasks = [{
+        id: `task-${TASK_MATRIX_MAP[current[0]]}`,
+        value: TASK_MATRIX_MAP[current[0]],
+        text: state.originalTaskList[current[0]],
       }, {
-        id: `task-${TASK_MATRIX_MAP[updatedCurrent[1]]}`,
-        value: TASK_MATRIX_MAP[updatedCurrent[1]],
-        text: state.unprioritized[updatedCurrent[1]],
+        id: `task-${TASK_MATRIX_MAP[current[1]]}`,
+        value: TASK_MATRIX_MAP[current[1]],
+        text: state.originalTaskList[current[1]],
       }]
-
-      const tracker = {
-        ...state.tracker,
-        [TASK_MATRIX_MAP[currentColumn]]: state.tracker[TASK_MATRIX_MAP[currentColumn]] + 1
-      }
-
-      console.log({ currentColumn, currentRow, updatedCurrent, tracker })
 
       return {
         ...state,
-        checked: '',
-        selectedTasks: updatedSelectedTasks,
-        current: updatedCurrent,
-        currentTasks: updatedCurrentTasks,
-        tracker
+        complete: isLastStep,
+        tasks: nextTasks,
+        selected: '',
+        selectedTasks,
+        taskMatrix,
+        current
       }
     }
   }
@@ -103,7 +103,10 @@ export const taskMatrixReducer = (state, action) => {
 }
 
 export const initialTaskMatrix = (newTaskList: string[]) => {
-  const currentTasks: currentTask[] = [{
+  const total = newTaskList.length
+  // const currentTasks = [TASK_MATRIX_MAP[0], TASK_MATRIX_MAP[1]]
+
+  const tasks: Task[] = [{
     id: `task-${TASK_MATRIX_MAP[0]}`,
     value: TASK_MATRIX_MAP[0],
     text: newTaskList[0]
@@ -113,19 +116,20 @@ export const initialTaskMatrix = (newTaskList: string[]) => {
     text: newTaskList[1]
   }]
 
-  const tracker: { [key: string]: number } = {}
+  const taskMatrix: { [key: string]: number } = {}
 
   for (let i = 1; i <= newTaskList.length; i++) {
-    tracker[TASK_MATRIX_MAP[(i - 1)]] = 0
+    taskMatrix[TASK_MATRIX_MAP[(i - 1)]] = 0
   }
 
   return {
-    unprioritized: newTaskList,
-    total: newTaskList.length,
+    originalTaskList: newTaskList,
+    complete: false,
+    selected: '',
     selectedTasks: [],
-    checked: '',
-    current: [0 , 1],
-    currentTasks,
-    tracker
+    current: [0, 1],
+    last: [total - 2, total - 1],
+    tasks,
+    taskMatrix
   }
 }

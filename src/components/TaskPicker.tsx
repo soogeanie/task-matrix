@@ -1,9 +1,9 @@
-import type { currentTask } from '../reducers/TaskMatrixReducer'
+import type { Task } from '../reducers/TaskMatrixReducer'
 
 import CheckCircleIcon from './Icons/CheckCircleIcon'
 
 type TaskSelectorProps = {
-  tasks: currentTask[];
+  tasks: Task[];
   handleOnChange: (selected: string) => void;
 }
 

@@ -10,8 +10,8 @@ type CreateNewTasksFormProps = {
   tasks: NewTaskInput[];
   minTasks: number;
   validForm: boolean;
-  onInputUpdate: (updatedTask: NewTaskInput) => void;
-  onInputDelete: (task: NewTaskInput) => void;
+  onChangeTask: (updatedTask: NewTaskInput) => void;
+  onDeleteTask: (task: NewTaskInput) => void;
   onFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
@@ -19,8 +19,8 @@ const CreateNewTasksForm = ({
   tasks,
   minTasks,
   validForm,
-  onInputUpdate,
-  onInputDelete,
+  onChangeTask,
+  onDeleteTask,
   onFormSubmit
 }: CreateNewTasksFormProps) => {
 
@@ -29,7 +29,7 @@ const CreateNewTasksForm = ({
 
     if (!existingTask || (updatedTask.hasValue === existingTask.hasValue) && !updatedTask.hasError) return
 
-    onInputUpdate(updatedTask)
+    onChangeTask(updatedTask)
   }
 
   return (
@@ -59,7 +59,7 @@ const CreateNewTasksForm = ({
             color="red"
             style="iconOnly"
             disabled={tasks.length <= minTasks}
-            handleOnClick={() => onInputDelete(task)}
+            handleOnClick={() => onDeleteTask(task)}
           >
             <MinusCircleIcon className="h-11 w-11" aria-hidden="true" />
             <span className="sr-only">{`Delete ${task.label}`}</span>
