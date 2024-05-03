@@ -1,10 +1,10 @@
-import type { Task } from '../reducers/TaskMatrixReducer'
+import type { TaskMatrixState } from '../types/TaskMatrixTypes';
 
 import CheckCircleIcon from './Icons/CheckCircleIcon'
 
 type TaskSelectorProps = {
-  tasks: Task[];
-  handleOnChange: (selected: string) => void;
+  tasks: TaskMatrixState['tasks'];
+  handleOnChange: (selected: TaskMatrixState['selected']) => void;
 }
 
 const TaskPicker = ({ tasks, handleOnChange }: TaskSelectorProps) => {

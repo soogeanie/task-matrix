@@ -1,11 +1,7 @@
+import type { NewTaskList, TaskMatrixState } from '../types/TaskMatrixTypes';
+
 type TaskMatrixMap = {
   [key: number]: string;
-}
-
-export type Task = {
-  id: string;
-  value: string;
-  text: string;
 }
 
 export const TASK_MATRIX_KEYS = {
@@ -39,7 +35,7 @@ export const ACTIONS = {
   ADD_SELECTED: 'addSelected',
 }
 
-export const taskMatrixReducer = (state, action) => {
+export const taskMatrixReducer = (state: TaskMatrixState, action) => {
   switch (action.type) {
     case ACTIONS.UPDATE_SELECTED: {
       return {
@@ -102,11 +98,10 @@ export const taskMatrixReducer = (state, action) => {
   throw Error(`Unknown action: ${action.type}`)
 }
 
-export const initialTaskMatrix = (newTaskList: string[]) => {
+export const initialTaskMatrix = (newTaskList: NewTaskList) => {
   const total = newTaskList.length
-  // const currentTasks = [TASK_MATRIX_MAP[0], TASK_MATRIX_MAP[1]]
 
-  const tasks: Task[] = [{
+  const tasks: TaskMatrixState['tasks'] = [{
     id: `task-${TASK_MATRIX_MAP[0]}`,
     value: TASK_MATRIX_MAP[0],
     text: newTaskList[0]
@@ -116,7 +111,7 @@ export const initialTaskMatrix = (newTaskList: string[]) => {
     text: newTaskList[1]
   }]
 
-  const taskMatrix: { [key: string]: number } = {}
+  const taskMatrix: TaskMatrixState['taskMatrix'] = {}
 
   for (let i = 1; i <= newTaskList.length; i++) {
     taskMatrix[TASK_MATRIX_MAP[(i - 1)]] = 0

@@ -1,4 +1,4 @@
-import { NewTaskInput } from '../components/CreateNewTasks'
+import type { CreateNewTasksState, MinTask, NewTaskInput } from '../types/CreateNewTasksTypes'
 
 export const ACTIONS = {
   ADD_TASK: 'addTask',
@@ -6,9 +6,9 @@ export const ACTIONS = {
   UPDATE_TASK: 'updateTask',
   UPDATE_SUBMIT_BUTTON: 'updateSubmitButton',
   UPDATE_ERROR: 'updateError'
-}
+} as const
 
-export const createNewTasksReducer = (state, action) => {
+export const createNewTasksReducer = (state: CreateNewTasksState, action) => {
   switch (action.type) {
     case ACTIONS.ADD_TASK: {
       const nextTask = state.next++
@@ -23,7 +23,8 @@ export const createNewTasksReducer = (state, action) => {
         newTask: {
           id: `task-input-${nextTask}`,
           label: `Task Input ${nextTask}`,
-          defaultValue: ''
+          defaultValue: '',
+          hasError: false
         }
       }
     }
@@ -83,8 +84,8 @@ export const createNewTasksReducer = (state, action) => {
   throw Error(`Unknown action: ${action.type}`)
 }
 
-export const initialCreateNewTasks = (minTasks: number) => {
-  const initialTasks: NewTaskInput[] = []
+export const initialCreateNewTasks = (minTasks: MinTask) => {
+  const initialTasks: CreateNewTasksState['tasks'] = []
   const nextTask = minTasks + 1
 
   for (let i = 1; i <= minTasks; i++) {

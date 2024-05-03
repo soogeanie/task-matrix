@@ -1,5 +1,7 @@
 import { useState } from 'react'
 
+import type { TaskList } from '../types/CreateNewTasksTypes'
+
 import CreateNewTasks from '../components/CreateNewTasks'
 import TaskMatrix from '../components/TaskMatrix'
 
@@ -17,7 +19,7 @@ const NewTaskList = () => {
   const [currentView, setCurrentView] = useState(DEFAULT_CURRENT_VIEW)
   const [newTaskList, setNewTaskList] = useState(DEFAULT_NEW_TASK_LIST)
 
-  const handleNewTaskListCreation = (newTaskList: string[]) => {
+  const handleNewTaskListCreation = (newTaskList: TaskList) => {
     // tbd: handle when newTaskList is empty
     setNewTaskList(newTaskList)
     setCurrentView(NEW_TASK_VIEWS.SELECT)

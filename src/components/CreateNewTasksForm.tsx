@@ -1,4 +1,4 @@
-import type { NewTaskInput } from './CreateNewTasks'
+import type { MinTask, NewTaskInput, CreateNewTasksState } from '../types/CreateNewTasksTypes';
 
 import Button from './Button/Button';
 import InputGroup from './InputGroup';
@@ -7,9 +7,9 @@ import InputText from './InputText';
 import MinusCircleIcon from './Icons/MinusCircleIcon';
 
 type CreateNewTasksFormProps = {
-  tasks: NewTaskInput[];
-  minTasks: number;
-  validForm: boolean;
+  tasks: CreateNewTasksState['tasks'];
+  minTasks: MinTask;
+  validForm: CreateNewTasksState['validForm'];
   onChangeTask: (updatedTask: NewTaskInput) => void;
   onDeleteTask: (task: NewTaskInput) => void;
   onFormSubmit: (event: React.FormEvent<HTMLFormElement>) => void;

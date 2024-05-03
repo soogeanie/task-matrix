@@ -2,19 +2,25 @@ import { useEffect, useReducer } from 'react';
 
 import { ACTIONS, TASK_MATRIX_KEYS, TASK_MATRIX_MAP, initialTaskMatrix, taskMatrixReducer } from '../reducers/TaskMatrixReducer';
 
+import type { NewTaskList, TaskMatrix, TaskMatrixState } from '../types/TaskMatrixTypes';
+
 import PageHeader from './PageHeader';
 import TaskPicker from './TaskPicker';
 import Button from './Button/Button';
 
 type TaskMatrixProps = {
-  newTaskList: string[];
+  newTaskList: NewTaskList;
 }
 
-type TaskMatrixIndices = {
-  [key: string]: number;
+type CalculateTaskMatrixProps = Pick<TaskMatrixState, 'selectedTasks' | 'last'> & {
+  initialTaskMatrix: TaskMatrixState['taskMatrix'];
 }
 
-const TASK_MATRIX_INDICES: TaskMatrixIndices = {
+type SortTasksProps = Pick<TaskMatrixState, 'taskMatrix'> & {
+  taskList: TaskMatrixState['originalTaskList'];
+}
+
+const TASK_MATRIX_INDICES: TaskMatrix = {
   [TASK_MATRIX_KEYS.A]: 0,
   [TASK_MATRIX_KEYS.B]: 1,
   [TASK_MATRIX_KEYS.C]: 2,
@@ -27,7 +33,7 @@ const TASK_MATRIX_INDICES: TaskMatrixIndices = {
   [TASK_MATRIX_KEYS.J]: 9
 } as const
 
-const checkIfArrayIsUnique = (array: string[]) => {
+const checkIfArrayIsUnique = (array: Array<string | number>) => {
   return array.length === new Set(array).size
 }
 
@@ -35,7 +41,7 @@ const calculateTaskMatrix = async ({
   initialTaskMatrix,
   selectedTasks,
   last
-}) => {
+}: CalculateTaskMatrixProps) => {
   console.log('calculateTaskMatrix')
 
   let taskMatrix = { ...initialTaskMatrix }
@@ -103,7 +109,7 @@ const calculateTaskMatrix = async ({
   return taskMatrix
 }
 
-const sortTasks = ({ taskList, taskMatrix }) => {
+const sortTasks = ({ taskList, taskMatrix }: SortTasksProps) => {
   console.log('running sortTasks')
 
   return Object.entries(taskMatrix)
@@ -116,8 +122,9 @@ const sortTasks = ({ taskList, taskMatrix }) => {
     })
 }
 
-const getPrioritizedTasks = async () => {
-  const results = JSON.parse(localStorage.getItem('taskPicker'))
+const getPrioritizedTasks = async (state: TaskMatrixState) => {
+  const localStorageResults = JSON.parse(localStorage.getItem('taskPicker'))
+  const results = localStorageResults.selectedTasks.length > 0 ? localStorageResults : state
 
   console.log('results', results)
 
@@ -171,7 +178,7 @@ const TaskMatrix = ({ newTaskList }: TaskMatrixProps) => {
 
     if (state.complete) {
       console.log('done!')
-      getPrioritizedTasks()
+      getPrioritizedTasks(state)
     }
   }, [state])
 

@@ -1,5 +1,7 @@
 import { useReducer } from 'react'
 
+import type { Actions, MaxTask, MinTask, NewTaskInput, TaskList } from '../types/CreateNewTasksTypes';
+
 import { ACTIONS, createNewTasksReducer, initialCreateNewTasks } from '../reducers/CreateNewTasksReducer';
 
 import CreateNewTasksForm from './CreateNewTasksForm'
@@ -7,25 +9,20 @@ import AddNewTask from './AddNewTask';
 import Button from './Button/Button';
 import PageHeader from './PageHeader';
 
-export type NewTaskInput = {
-  id: string;
-  label: string;
-  defaultValue: string;
-  hasValue: boolean;
-  hasError: boolean;
-}
 
 type CreateNewTasksProps = {
-  onNewTaskListCreation: (newTaskList: FormDataEntryValue[]) => void;
+  onNewTaskListCreation: (newTaskList: TaskList) => void;
 }
 
-const MIN_TASKS = 3
-const MAX_TASKS = 10
+type FormInputIds = Array<NewTaskInput['id']>;
+
+const MIN_TASKS: MinTask = 3
+const MAX_TASKS: MaxTask= 10
 
 const CreateNewTasks = ({ onNewTaskListCreation }: CreateNewTasksProps) => {
   const [state, dispatch] = useReducer(createNewTasksReducer, initialCreateNewTasks(MIN_TASKS))
 
-  const handleTaskUpdate = (action, task) => {
+  const handleTaskUpdate = (action: Actions, task: NewTaskInput) => {
     dispatch({
       type: action,
       task
@@ -34,7 +31,7 @@ const CreateNewTasks = ({ onNewTaskListCreation }: CreateNewTasksProps) => {
     dispatch({ type: ACTIONS.UPDATE_SUBMIT_BUTTON })
   }
 
-  const validateForm = (formInputIds: string[]) => {
+  const validateForm = (formInputIds: FormInputIds) => {
     let isValid = true
 
     for (const inputId of formInputIds) {
@@ -64,7 +61,7 @@ const CreateNewTasks = ({ onNewTaskListCreation }: CreateNewTasksProps) => {
     const isValidForm = await validateForm([...formData.keys()])
 
     if (isValidForm) {
-      const results = [...formData.values()]
+      const results = [...formData.values()] as TaskList
 
       // tbd: create a custom hook for this
       localStorage.setItem('newTaskList', JSON.stringify(results))
