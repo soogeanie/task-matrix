@@ -4,7 +4,7 @@ import InputGroup from './InputGroup';
 import InputText from './InputText';
 import Button from './Button/Button';
 
-import PlusCircleIcon from './Icons/PlusCircleIcon';
+import { PlusCircleIcon } from '@heroicons/react/24/solid';
 
 type AddNewTaskProps = {
   newTask: CreateNewTasksState['newTask'];

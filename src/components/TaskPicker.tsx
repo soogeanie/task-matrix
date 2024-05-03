@@ -1,6 +1,6 @@
 import type { TaskMatrixState } from '../types/TaskMatrixTypes';
 
-import CheckCircleIcon from './Icons/CheckCircleIcon'
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
 type TaskSelectorProps = {
   tasks: TaskMatrixState['tasks'];

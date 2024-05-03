@@ -1,12 +1,14 @@
 import { useEffect, useReducer } from 'react';
 
-import { ACTIONS, TASK_MATRIX_KEYS, TASK_MATRIX_MAP, initialTaskMatrix, taskMatrixReducer } from '../reducers/TaskMatrixReducer';
-
 import type { NewTaskList, TaskMatrix, TaskMatrixState } from '../types/TaskMatrixTypes';
+
+import { ACTIONS, TASK_MATRIX_KEYS, TASK_MATRIX_MAP, initialTaskMatrix, taskMatrixReducer } from '../reducers/TaskMatrixReducer';
 
 import PageHeader from './PageHeader';
 import TaskPicker from './TaskPicker';
 import Button from './Button/Button';
+
+import { checkIfArrayIsUnique } from '../utils';
 
 type TaskMatrixProps = {
   newTaskList: NewTaskList;
@@ -33,57 +35,31 @@ const TASK_MATRIX_INDICES: TaskMatrix = {
   [TASK_MATRIX_KEYS.J]: 9
 } as const
 
-const checkIfArrayIsUnique = (array: Array<string | number>) => {
-  return array.length === new Set(array).size
-}
-
 const calculateTaskMatrix = async ({
   initialTaskMatrix,
   selectedTasks,
   last
 }: CalculateTaskMatrixProps) => {
-  console.log('calculateTaskMatrix')
-
   let taskMatrix = { ...initialTaskMatrix }
 
   const keys = Object.keys(taskMatrix)
   const totalKeys = keys.length
 
-  // let hasDuplicates = false
   let left = 0
   let right = 1
 
-  console.log('last', last)
-
   while (left < (totalKeys - 1)) {
-    console.log(`[${left}, ${right}]`)
-
-    console.log(`left: ${TASK_MATRIX_MAP[left]} - ${taskMatrix[TASK_MATRIX_MAP[left]]}`)
-    console.log(`right: ${TASK_MATRIX_MAP[right]} - ${taskMatrix[TASK_MATRIX_MAP[right]]}`)
-
     if (taskMatrix[TASK_MATRIX_MAP[left]] === taskMatrix[TASK_MATRIX_MAP[right]]) {
-      console.log('EQUALS!!!!')
-
-      // hasDuplicates = true
 
       const selectedValues = selectedTasks[left]
       const arrayIndex = (right - left) - 1
       const selected = selectedValues[arrayIndex]
-
-      console.log('selectedValues', selectedValues)
-      console.log('arrayIndex', arrayIndex)
-      console.log('selected', selected)
-
       const newValue = taskMatrix[selected] + 1
-
-      console.log('newValue', newValue)
 
       taskMatrix = {
         ...taskMatrix,
         [selected]: newValue
       }
-
-      console.log('updated', taskMatrix)
     }
 
     if (right === last[1]) {
@@ -97,8 +73,6 @@ const calculateTaskMatrix = async ({
   const hasDuplicates = await !checkIfArrayIsUnique(Object.values(taskMatrix))
 
   if (hasDuplicates) {
-    console.log('hasDuplicates', taskMatrix)
-
     return calculateTaskMatrix({
       initialTaskMatrix: taskMatrix,
       selectedTasks,
@@ -110,8 +84,6 @@ const calculateTaskMatrix = async ({
 }
 
 const sortTasks = ({ taskList, taskMatrix }: SortTasksProps) => {
-  console.log('running sortTasks')
-
   return Object.entries(taskMatrix)
     .sort((a, b) => {
       return b[1] - a[1]
@@ -125,8 +97,6 @@ const sortTasks = ({ taskList, taskMatrix }: SortTasksProps) => {
 const getPrioritizedTasks = async (state: TaskMatrixState) => {
   const localStorageResults = JSON.parse(localStorage.getItem('taskPicker'))
   const results = localStorageResults.selectedTasks.length > 0 ? localStorageResults : state
-
-  console.log('results', results)
 
   const { taskMatrix, selectedTasks, originalTaskList, last } = results
 
@@ -142,19 +112,18 @@ const getPrioritizedTasks = async (state: TaskMatrixState) => {
 
   localStorage.setItem('taskMatrix', JSON.stringify(updatedTaskMatrix))
 
-  console.log('updatedTaskMatrix', updatedTaskMatrix)
-
   const sortedTaskList = await sortTasks({
     taskList: originalTaskList,
     taskMatrix: updatedTaskMatrix
   })
 
   localStorage.setItem('sortedTaskList', JSON.stringify(sortedTaskList))
-
-  console.log('sortedTaskList', sortedTaskList)
 }
 
 const TaskMatrix = ({ newTaskList }: TaskMatrixProps) => {
+  // todo: add functionality that checks to see if there is an existing taskPicker in local storage
+  // so user can pick up where they left off
+  // * it might be time to split this up into more components or move a lot of code above out into utils or helper files
   const [state, dispatch] = useReducer(taskMatrixReducer, initialTaskMatrix(newTaskList))
 
   const handleNextButton = () => {
@@ -177,7 +146,6 @@ const TaskMatrix = ({ newTaskList }: TaskMatrixProps) => {
     }
 
     if (state.complete) {
-      console.log('done!')
       getPrioritizedTasks(state)
     }
   }, [state])

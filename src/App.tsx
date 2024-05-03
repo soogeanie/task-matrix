@@ -1,5 +1,5 @@
 // import { useEffect } from 'react'
-import NewTaskList from './pages/NewTaskList'
+import NewTaskList from './pages/NewTaskList';
 
 const App = () => {
   // tbd: build a modal for this
@@ -15,7 +15,11 @@ const App = () => {
 
   return (
     <div className="min-h-full">
-      <NewTaskList />
+      <div className="py-10">
+        <main className="mx-auto max-w-7xl sm:px-6 lg:px-8 pb-12 lg:pb-16">
+          <NewTaskList />
+        </main>
+      </div>
     </div>
   )
 }

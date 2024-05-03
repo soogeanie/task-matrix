@@ -4,7 +4,7 @@ import Button from './Button/Button';
 import InputGroup from './InputGroup';
 import InputText from './InputText';
 
-import MinusCircleIcon from './Icons/MinusCircleIcon';
+import { MinusCircleIcon } from '@heroicons/react/24/solid';
 
 type CreateNewTasksFormProps = {
   tasks: CreateNewTasksState['tasks'];

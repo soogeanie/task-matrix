@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState } from 'react';
 
-import type { TaskList } from '../types/CreateNewTasksTypes'
+import type { TaskList } from '../types/CreateNewTasksTypes';
 
-import CreateNewTasks from '../components/CreateNewTasks'
-import TaskMatrix from '../components/TaskMatrix'
+import CreateNewTasks from '../components/CreateNewTasks';
+import TaskMatrix from '../components/TaskMatrix';
 
 const NEW_TASK_VIEWS = {
   CREATE: 'CreateNewTasks',

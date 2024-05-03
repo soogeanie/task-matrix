@@ -1,4 +1,4 @@
-import type { CreateNewTasksState, MinTask, NewTaskInput } from '../types/CreateNewTasksTypes'
+import type { CreateNewTasksState, MinTask, NewTaskInput } from '../types/CreateNewTasksTypes';
 
 export const ACTIONS = {
   ADD_TASK: 'addTask',

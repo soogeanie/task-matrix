@@ -1,10 +1,10 @@
-import { useReducer } from 'react'
+import { useReducer } from 'react';
 
 import type { Actions, MaxTask, MinTask, NewTaskInput, TaskList } from '../types/CreateNewTasksTypes';
 
 import { ACTIONS, createNewTasksReducer, initialCreateNewTasks } from '../reducers/CreateNewTasksReducer';
 
-import CreateNewTasksForm from './CreateNewTasksForm'
+import CreateNewTasksForm from './CreateNewTasksForm';
 import AddNewTask from './AddNewTask';
 import Button from './Button/Button';
 import PageHeader from './PageHeader';
